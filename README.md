@@ -38,4 +38,4 @@ Okay now that we have the collection how do we run it?
 ## The Postman visualize feature
 
 The postman collection also contains an example of using the visualize (beta) feature, which you can see if you run the request within postman. You can check out how the chart is built in the *tests* tab of postman.
-![example postman visualize feature](buildOutComeVisualized.png)
+![example postman visualize feature](buildOutcomeVisualized.png)
