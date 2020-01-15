@@ -1,0 +1,32 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+steps:
+- task: Npm@1
+  displayName: 'npm install newman'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install newman -g'
+
+- task: PowerShell@2
+  displayName: 'newman run'
+  inputs:
+    targetType: filePath
+    filePath: ./RunNewmanCLI.ps1
+    pwsh: true
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+#Your build pipeline references a secret variable named ‘slackToken’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
+- task: PowerShell@2
+  displayName: 'send slack message'
+  inputs:
+    targetType: filePath
+    filePath: ./SendSlackMessage.ps1
+    pwsh: true
+  env:
+    SLACK_TOKEN: $(slackToken)
