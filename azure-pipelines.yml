@@ -1,9 +1,12 @@
 trigger:
 - master
 
+variables:
+  slackChannel: '@username'
+
 pool:
   vmImage: 'windows-2019'
-
+ 
 steps:
 - task: Npm@1
   displayName: 'npm install newman'
@@ -12,6 +15,13 @@ steps:
     verbose: false
     customCommand: 'install newman -g'
 
+- task: Npm@1
+  displayName: 'npm install newman-reporter-htmlextra'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install newman-reporter-htmlextra -g'
+    
 - task: PowerShell@2
   displayName: 'newman run'
   inputs:
@@ -23,10 +33,23 @@ steps:
 
 #Your build pipeline references a secret variable named ‘slackToken’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
 - task: PowerShell@2
-  displayName: 'send slack message'
+  displayName: 'Build slack message'
   inputs:
     targetType: filePath
-    filePath: ./SendSlackMessage.ps1
+    filePath: ./BuildSlackMessage.ps1
     pwsh: true
+  env:
+    SLACK_TOKEN: $(slackToken)
+
+#Using this task to upload the html report.
+- task: kasunkodagoda.slack-notification.slack-notification-task.SlackNotification@5
+  displayName: 'Upload HTML Report'
+  inputs:
+    SlackApiToken: '$(slackToken)'
+    Channel: $(slackChannel)
+    NotificationType: UploadFile
+    UploadFilePath: Azure-DevOps-Report.html
+    FileTitle: Azure-DevOps-Report
+    FileComment: '$(SlackMessage)'
   env:
     SLACK_TOKEN: $(slackToken)
