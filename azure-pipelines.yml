@@ -3,6 +3,7 @@ trigger:
 
 variables:
   slackChannel: '@username'
+  system.debug: true
 
 pool:
   vmImage: 'windows-2019'
